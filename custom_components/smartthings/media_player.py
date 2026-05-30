@@ -50,7 +50,11 @@ DEVICE_CLASS_MAP: dict[Category | str, MediaPlayerDeviceClass] = {
     Category.SPEAKER: MediaPlayerDeviceClass.SPEAKER,
     Category.TELEVISION: MediaPlayerDeviceClass.TV,
     Category.RECEIVER: MediaPlayerDeviceClass.RECEIVER,
-    Category.PROJECTOR: MediaPlayerDeviceClass.PROJECTOR,
+    **(
+        {Category.PROJECTOR: MediaPlayerDeviceClass.PROJECTOR}
+        if hasattr(MediaPlayerDeviceClass, "PROJECTOR")
+        else {}
+    ),
 }
 
 VALUE_TO_STATE = {
