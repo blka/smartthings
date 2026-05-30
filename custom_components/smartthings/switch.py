@@ -17,7 +17,7 @@ from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from . import FullDevice, SmartThingsConfigEntry
-from .const import CAPABILITY_AUTO_CLEANING_MODE, INVALID_SWITCH_CATEGORIES, MAIN
+from .const import INVALID_SWITCH_CATEGORIES, MAIN
 from .entity import SmartThingsEntity
 from .util import deprecate_entity
 
@@ -121,8 +121,8 @@ CAPABILITY_TO_COMMAND_SWITCHES: dict[
             command=Command.SET_BYPASS_MODE,
         )
     ),
-    CAPABILITY_AUTO_CLEANING_MODE: SmartThingsCommandSwitchEntityDescription(
-        key=CAPABILITY_AUTO_CLEANING_MODE,
+    Capability.CUSTOM_AUTO_CLEANING_MODE: SmartThingsCommandSwitchEntityDescription(
+        key=Capability.CUSTOM_AUTO_CLEANING_MODE,
         translation_key="auto_cleaning",
         status_attribute=Attribute.AUTO_CLEANING_MODE,
         command=Command.SET_AUTO_CLEANING_MODE,

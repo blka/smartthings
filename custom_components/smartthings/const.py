@@ -127,8 +127,3 @@ UNIT_MAP = {"C": UnitOfTemperature.CELSIUS, "F": UnitOfTemperature.FAHRENHEIT}
 
 # WindFree AC - ARTIK051 model detection
 ARTIK051_MODEL_PREFIX = "ARTIK051"
-
-# WindFree AC - Additional capabilities not in pysmartthings enum
-CAPABILITY_AC_AUDIO_FEEDBACK = "samsungce.airConditionerAudioFeedback"
-CAPABILITY_AUTO_CLEANING_MODE = "custom.autoCleaningMode"
-CAPABILITY_DUST_FILTER = "custom.dustFilter"

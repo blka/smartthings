@@ -623,9 +623,12 @@ KEEP_CAPABILITY_QUIRK: dict[
     # WindFree AC: Samsung ARTIK051 lists these capabilities as "disabled" with
     # None attribute values. The official quirk only preserves them when the
     # attribute value is not None, which fails on ARTIK051. We always preserve
-    # them so switch and sensor entities get created.
+    # them so switch, sensor, and select entities get created.
     Capability.SAMSUNG_CE_AIR_CONDITIONER_LIGHTING: lambda _: True,
     Capability.SAMSUNG_CE_AIR_CONDITIONER_BEEP: lambda _: True,
+    Capability.SAMSUNG_CE_AIR_CONDITIONER_AUDIO_FEEDBACK: lambda _: True,
+    Capability.CUSTOM_AUTO_CLEANING_MODE: lambda _: True,
+    Capability.CUSTOM_DUST_FILTER: lambda _: True,
     Capability.POWER_CONSUMPTION_REPORT: lambda _: True,
     Capability.AIR_QUALITY_SENSOR: lambda _: True,
     Capability.DUST_SENSOR: lambda _: True,
