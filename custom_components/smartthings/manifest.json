@@ -1,0 +1,14 @@
+{
+  "domain": "smartthings",
+  "name": "SmartThings WindFree",
+  "config_flow": true,
+  "documentation": "https://github.com/blazej/smartthings",
+  "issue_tracker": "https://github.com/blazej/smartthings/issues",
+  "requirements": ["pysmartthings==3.7.3"],
+  "dependencies": ["application_credentials"],
+  "after_dependencies": ["cloud"],
+  "codeowners": ["@blazej"],
+  "iot_class": "cloud_push",
+  "loggers": ["pysmartthings"],
+  "version": "2025.6.0"
+}

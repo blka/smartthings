@@ -1,0 +1,8 @@
+{
+  "name": "SmartThings WindFree",
+  "domains": ["binary_sensor", "button", "climate", "cover", "event", "fan", "light", "lock", "media_player", "number", "scene", "select", "sensor", "switch", "time", "update", "vacuum", "valve", "water_heater"],
+  "homeassistant": "2025.6.0",
+  "render_readme": true,
+  "content_in_root": false,
+  "iot_class": "cloud_push"
+}
