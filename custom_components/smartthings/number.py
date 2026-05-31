@@ -46,6 +46,11 @@ async def async_setup_entry(
         ].value
         is not None
     )
+    entities.extend(
+        SmartThingsTropicalNightModeNumberEntity(entry_data.client, device)
+        for device in entry_data.devices.values()
+        if Capability.CUSTOM_AIR_CONDITIONER_TROPICAL_NIGHT_MODE in device.status[MAIN]
+    )
     async_add_entities(entities)
 
 
@@ -233,5 +238,45 @@ class SmartThingsRefrigeratorTemperatureNumberEntity(SmartThingsEntity, NumberEn
         await self.execute_device_command(
             Capability.THERMOSTAT_COOLING_SETPOINT,
             Command.SET_COOLING_SETPOINT,
+            int(value),
+        )
+
+
+class SmartThingsTropicalNightModeNumberEntity(SmartThingsEntity, NumberEntity):
+    """Define a SmartThings number for AC tropical night mode."""
+
+    _attr_translation_key = "tropical_night_mode"
+    _attr_native_min_value = 0
+    _attr_native_max_value = 3
+    _attr_native_step = 1.0
+    _attr_mode = NumberMode.SLIDER
+    _attr_entity_category = EntityCategory.CONFIG
+    _attr_icon = "mdi:weather-night"
+
+    def __init__(self, client: SmartThings, device: FullDevice) -> None:
+        """Initialize the instance."""
+        super().__init__(
+            client, device, {Capability.CUSTOM_AIR_CONDITIONER_TROPICAL_NIGHT_MODE}
+        )
+        self._attr_unique_id = (
+            f"{device.device.device_id}_{MAIN}"
+            f"_{Capability.CUSTOM_AIR_CONDITIONER_TROPICAL_NIGHT_MODE}"
+            f"_{Attribute.AC_TROPICAL_NIGHT_MODE_LEVEL}"
+        )
+
+    @property
+    def native_value(self) -> float | None:
+        """Return the current value."""
+        value = self.get_attribute_value(
+            Capability.CUSTOM_AIR_CONDITIONER_TROPICAL_NIGHT_MODE,
+            Attribute.AC_TROPICAL_NIGHT_MODE_LEVEL,
+        )
+        return int(value) if value is not None else None
+
+    async def async_set_native_value(self, value: float) -> None:
+        """Set the value."""
+        await self.execute_device_command(
+            Capability.CUSTOM_AIR_CONDITIONER_TROPICAL_NIGHT_MODE,
+            Command.SET_AC_TROPICAL_NIGHT_MODE_LEVEL,
             int(value),
         )

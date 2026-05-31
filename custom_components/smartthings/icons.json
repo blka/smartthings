@@ -45,6 +45,9 @@
       "resume": {
         "default": "mdi:play"
       },
+      "self_check": {
+        "default": "mdi:clipboard-check"
+      },
       "start": {
         "default": "mdi:play"
       },
@@ -88,6 +91,9 @@
     "number": {
       "freezer_temperature": {
         "default": "mdi:snowflake-thermometer"
+      },
+      "tropical_night_mode": {
+        "default": "mdi:weather-night"
       },
       "washer_rinse_cycles": {
         "default": "mdi:waves-arrow-up"
@@ -156,6 +162,20 @@
       }
     },
     "sensor": {
+      "dust_filter_usage": {
+        "default": "mdi:air-filter"
+      },
+      "self_check_status": {
+        "default": "mdi:clipboard-check",
+        "state": {
+          "complete": "mdi:check-circle",
+          "ready": "mdi:clock-outline",
+          "running": "mdi:progress-clock"
+        }
+      },
+      "software_version": {
+        "default": "mdi:chip"
+      },
       "cooktop_operating_state": {
         "default": "mdi:stove",
         "state": {

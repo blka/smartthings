@@ -60,6 +60,12 @@ CAPABILITIES_TO_BUTTONS: dict[Capability | str, SmartThingsButtonDescription] = 
         command=Command.RESET_FILTER,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
+    Capability.SAMSUNG_CE_SELF_CHECK: SmartThingsButtonDescription(
+        key=Capability.SAMSUNG_CE_SELF_CHECK,
+        translation_key="self_check",
+        command=Command.START_SELF_CHECK,
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
 }
 
 

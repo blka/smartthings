@@ -128,6 +128,9 @@
       },
       "reset_dust_filter": {
         "name": "Reset dust filter"
+      },
+      "self_check": {
+        "name": "Self check"
       }
     },
     "climate": {
@@ -255,6 +258,9 @@
       "washer_rinse_cycles": {
         "name": "Rinse cycles",
         "unit_of_measurement": "cycles"
+      },
+      "tropical_night_mode": {
+        "name": "Tropical night mode"
       }
     },
     "select": {
@@ -546,6 +552,10 @@
       },
       "dryer_mode": {
         "name": "Dryer mode"
+      },
+      "dust_filter_usage": {
+        "name": "Dust filter usage",
+        "unit_of_measurement": "hours"
       },
       "energy_difference": {
         "name": "Energy difference"
@@ -885,6 +895,17 @@
           "detected": "[%key:component::smartthings::entity::sensor::carbon_monoxide_detector::state::detected%]",
           "tested": "[%key:component::smartthings::entity::sensor::carbon_monoxide_detector::state::tested%]"
         }
+      },
+      "self_check_status": {
+        "name": "Self check status",
+        "state": {
+          "complete": "Complete",
+          "ready": "Ready",
+          "running": "Running"
+        }
+      },
+      "software_version": {
+        "name": "Software version"
       },
       "stick_cleaner_dust_bag_usage": {
         "name": "Dust bag cycles",
