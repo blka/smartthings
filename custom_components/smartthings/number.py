@@ -46,12 +46,6 @@ async def async_setup_entry(
         ].value
         is not None
     )
-    entities.extend(
-        SmartThingsVolumeNumberEntity(entry_data.client, device)
-        for device in entry_data.devices.values()
-        if Capability.AUDIO_VOLUME in device.status[MAIN]
-        and Capability.AIR_CONDITIONER_MODE in device.status[MAIN]
-    )
     async_add_entities(entities)
 
 
@@ -239,60 +233,5 @@ class SmartThingsRefrigeratorTemperatureNumberEntity(SmartThingsEntity, NumberEn
         await self.execute_device_command(
             Capability.THERMOSTAT_COOLING_SETPOINT,
             Command.SET_COOLING_SETPOINT,
-            int(value),
-        )
-
-
-class SmartThingsVolumeNumberEntity(SmartThingsEntity, NumberEntity):
-    """Define a SmartThings volume number entity for AC beep control."""
-
-    _attr_translation_key = "beep_volume"
-    _attr_native_min_value = 0
-    _attr_native_max_value = 100
-    _attr_native_step = 1
-    _attr_native_unit_of_measurement = "%"
-    _attr_mode = NumberMode.SLIDER
-    _attr_entity_category = EntityCategory.CONFIG
-    _attr_icon = "mdi:volume-high"
-
-    def __init__(self, client: SmartThings, device: FullDevice) -> None:
-        """Initialize the instance."""
-        super().__init__(client, device, {Capability.AUDIO_VOLUME}, component=MAIN)
-        self._attr_unique_id = (
-            f"{device.device.device_id}_{MAIN}"
-            f"_{Capability.AUDIO_VOLUME}"
-            f"_{Attribute.VOLUME}"
-            f"_{Attribute.VOLUME}"
-        )
-
-    @property
-    def native_value(self) -> float | None:
-        """Return the current value."""
-        try:
-            volume = self.get_attribute_value(Capability.AUDIO_VOLUME, Attribute.VOLUME)
-            return int(volume) if volume is not None else None
-        except (ValueError, TypeError):
-            return None
-
-    @property
-    def icon(self) -> str:
-        """Return the icon based on volume level."""
-        try:
-            volume = int(self.get_attribute_value(Capability.AUDIO_VOLUME, Attribute.VOLUME))
-        except (ValueError, TypeError):
-            return "mdi:volume-high"
-        if volume == 0:
-            return "mdi:volume-off"
-        if volume <= 33:
-            return "mdi:volume-low"
-        if volume <= 66:
-            return "mdi:volume-medium"
-        return "mdi:volume-high"
-
-    async def async_set_native_value(self, value: float) -> None:
-        """Set the value."""
-        await self.execute_device_command(
-            Capability.AUDIO_VOLUME,
-            Command.SET_VOLUME,
             int(value),
         )

@@ -96,8 +96,6 @@ EXECUTE_SWITCHES: dict[str, SmartThingsExecuteSwitchEntityDescription] = {
     ),
 }
 
-BEEP_VOLUME_ON = 10
-
 
 SWITCH = SmartThingsSwitchEntityDescription(
     key=Capability.SWITCH,
@@ -470,20 +468,6 @@ async def async_setup_entry(
                     description,
                 )
             )
-    # Beep switch via audioVolume for ACs without dedicated beep capability
-    for device in entry_data.devices.values():
-        if Capability.AUDIO_VOLUME not in device.status[MAIN]:
-            continue
-        if Capability.AIR_CONDITIONER_MODE not in device.status[MAIN]:
-            continue
-        if Capability.SAMSUNG_CE_AIR_CONDITIONER_BEEP in device.status[MAIN]:
-            continue
-        entities.append(
-            SmartThingsBeepSwitch(
-                entry_data.client,
-                device,
-            )
-        )
     async_add_entities(entities)
 
 
@@ -717,46 +701,4 @@ class SmartThingsExecuteSwitch(SmartThingsEntity, SwitchEntity):
             Capability.EXECUTE,
             Command.EXECUTE,
             [OCF_MODE_HREF, {OCF_OPTIONS_KEY: [self.entity_description.off_option]}],
-        )
-
-
-class SmartThingsBeepSwitch(SmartThingsEntity, SwitchEntity):
-    """Define a SmartThings beep switch using audioVolume capability."""
-
-    def __init__(
-        self,
-        client: SmartThings,
-        device: FullDevice,
-    ) -> None:
-        """Initialize the beep switch."""
-        super().__init__(client, device, {Capability.AUDIO_VOLUME}, component=MAIN)
-        self._attr_translation_key = "sound_effect"
-        self._attr_entity_category = EntityCategory.CONFIG
-        self._attr_unique_id = (
-            f"{device.device.device_id}_{MAIN}_{Capability.AUDIO_VOLUME}_beep"
-        )
-
-    @property
-    def is_on(self) -> bool:
-        """Return true if beep is on (volume > 0)."""
-        try:
-            volume = self.get_attribute_value(Capability.AUDIO_VOLUME, Attribute.VOLUME)
-            return int(volume) > 0 if volume is not None else False
-        except (ValueError, TypeError):
-            return False
-
-    async def async_turn_on(self, **kwargs: Any) -> None:
-        """Turn the beep on."""
-        await self.execute_device_command(
-            Capability.AUDIO_VOLUME,
-            Command.SET_VOLUME,
-            BEEP_VOLUME_ON,
-        )
-
-    async def async_turn_off(self, **kwargs: Any) -> None:
-        """Turn the beep off."""
-        await self.execute_device_command(
-            Capability.AUDIO_VOLUME,
-            Command.SET_VOLUME,
-            0,
         )

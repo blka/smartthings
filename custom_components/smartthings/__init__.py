@@ -625,6 +625,7 @@ KEEP_CAPABILITY_QUIRK: dict[
     Capability.DEMAND_RESPONSE_LOAD_CONTROL: lambda _: True,
     Capability.CUSTOM_AUTO_CLEANING_MODE: lambda _: True,
     Capability.CUSTOM_DUST_FILTER: lambda _: True,
+    Capability.CUSTOM_DO_NOT_DISTURB_MODE: lambda _: True,
     Capability.POWER_CONSUMPTION_REPORT: lambda _: True,
     Capability.AIR_QUALITY_SENSOR: lambda _: True,
     Capability.DUST_SENSOR: lambda _: True,
