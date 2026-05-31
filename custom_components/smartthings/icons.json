@@ -194,6 +194,13 @@
       "add_rinse": {
         "default": "mdi:water-plus"
       },
+      "beep": {
+        "default": "mdi:volume-high",
+        "state": {
+          "off": "mdi:volume-off",
+          "on": "mdi:volume-high"
+        }
+      },
       "auto_cycle_link": {
         "default": "mdi:link-off",
         "state": {

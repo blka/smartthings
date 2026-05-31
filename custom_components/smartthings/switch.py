@@ -94,9 +94,9 @@ EXECUTE_SWITCHES: dict[str, SmartThingsExecuteSwitchEntityDescription] = {
         off_option=OCF_LIGHT_ON,
         entity_category=EntityCategory.CONFIG,
     ),
-    "sound_effect": SmartThingsExecuteSwitchEntityDescription(
-        key="sound_effect",
-        translation_key="sound_effect",
+    "beep": SmartThingsExecuteSwitchEntityDescription(
+        key="beep",
+        translation_key="beep",
         on_option=OCF_VOLUME_100,
         off_option=OCF_VOLUME_MUTE,
         entity_category=EntityCategory.CONFIG,
@@ -460,7 +460,7 @@ async def async_setup_entry(
             # Skip if dedicated capability already exists
             if key == "display_lighting" and Capability.SAMSUNG_CE_AIR_CONDITIONER_LIGHTING in device.status[MAIN]:
                 continue
-            if key == "sound_effect" and Capability.SAMSUNG_CE_AIR_CONDITIONER_BEEP in device.status[MAIN]:
+            if key == "beep" and Capability.SAMSUNG_CE_AIR_CONDITIONER_BEEP in device.status[MAIN]:
                 continue
             entities.append(
                 SmartThingsExecuteSwitch(

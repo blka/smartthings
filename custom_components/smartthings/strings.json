@@ -1028,6 +1028,9 @@
       "bubble_soak": {
         "name": "Bubble Soak"
       },
+      "beep": {
+        "name": "Beep"
+      },
       "bypass_mode": {
         "name": "Bypass mode"
       },
