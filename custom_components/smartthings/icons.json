@@ -86,12 +86,6 @@
       }
     },
     "number": {
-      "beep_volume": {
-        "default": "mdi:volume-high",
-        "state": {
-          "0": "mdi:volume-off"
-        }
-      },
       "freezer_temperature": {
         "default": "mdi:snowflake-thermometer"
       },
@@ -219,12 +213,6 @@
           "on": "mdi:lightbulb-on"
         }
       },
-      "do_not_disturb": {
-        "default": "mdi:minus-circle-off",
-        "state": {
-          "on": "mdi:minus-circle"
-        }
-      },
       "dry_plus": {
         "default": "mdi:heat-wave"
       },
@@ -288,14 +276,6 @@
         "state": {
           "off": "mdi:tumble-dryer-off"
         }
-      }
-    },
-    "time": {
-      "do_not_disturb_end_time": {
-        "default": "mdi:bell-ring"
-      },
-      "do_not_disturb_start_time": {
-        "default": "mdi:bell-cancel"
       }
     }
   }

@@ -94,6 +94,13 @@ EXECUTE_SWITCHES: dict[str, SmartThingsExecuteSwitchEntityDescription] = {
         off_option=OCF_LIGHT_ON,
         entity_category=EntityCategory.CONFIG,
     ),
+    "sound_effect": SmartThingsExecuteSwitchEntityDescription(
+        key="sound_effect",
+        translation_key="sound_effect",
+        on_option=OCF_VOLUME_100,
+        off_option=OCF_VOLUME_MUTE,
+        entity_category=EntityCategory.CONFIG,
+    ),
 }
 
 
@@ -219,14 +226,6 @@ CAPABILITY_TO_SWITCHES: dict[Capability | str, SmartThingsSwitchEntityDescriptio
             status_attribute=Attribute.STATUS,
             entity_category=EntityCategory.CONFIG,
         )
-    ),
-    Capability.CUSTOM_DO_NOT_DISTURB_MODE: SmartThingsSwitchEntityDescription(
-        key=Capability.CUSTOM_DO_NOT_DISTURB_MODE,
-        translation_key="do_not_disturb",
-        status_attribute=Attribute.DO_NOT_DISTURB,
-        entity_category=EntityCategory.CONFIG,
-        on_command=Command.DO_NOT_DISTURB_ON,
-        off_command=Command.DO_NOT_DISTURB_OFF,
     ),
     Capability.SOUND_DETECTION: SmartThingsSwitchEntityDescription(
         key=Capability.SOUND_DETECTION,
@@ -461,6 +460,8 @@ async def async_setup_entry(
             # Skip if dedicated capability already exists
             if key == "display_lighting" and Capability.SAMSUNG_CE_AIR_CONDITIONER_LIGHTING in device.status[MAIN]:
                 continue
+            if key == "sound_effect" and Capability.SAMSUNG_CE_AIR_CONDITIONER_BEEP in device.status[MAIN]:
+                continue
             entities.append(
                 SmartThingsExecuteSwitch(
                     entry_data.client,
@@ -645,6 +646,7 @@ class SmartThingsExecuteSwitch(SmartThingsEntity, SwitchEntity):
         self._attr_unique_id = (
             f"{device.device.device_id}_{MAIN}_execute_{entity_description.key}"
         )
+        self._assumed_on = True
 
     def _get_ocf_options(self) -> list[str] | None:
         """Extract OCF options list from execute capability data attribute."""
@@ -683,9 +685,9 @@ class SmartThingsExecuteSwitch(SmartThingsEntity, SwitchEntity):
     def is_on(self) -> bool:
         """Return true if switch is on."""
         options = self._get_ocf_options()
-        if options is None:
-            return True
-        return self.entity_description.off_option not in options
+        if options is not None:
+            return self.entity_description.off_option not in options
+        return self._assumed_on
 
     async def async_turn_on(self, **kwargs: Any) -> None:
         """Turn the switch on."""
@@ -694,6 +696,8 @@ class SmartThingsExecuteSwitch(SmartThingsEntity, SwitchEntity):
             Command.EXECUTE,
             [OCF_MODE_HREF, {OCF_OPTIONS_KEY: [self.entity_description.on_option]}],
         )
+        self._assumed_on = True
+        self.async_write_ha_state()
 
     async def async_turn_off(self, **kwargs: Any) -> None:
         """Turn the switch off."""
@@ -702,3 +706,5 @@ class SmartThingsExecuteSwitch(SmartThingsEntity, SwitchEntity):
             Command.EXECUTE,
             [OCF_MODE_HREF, {OCF_OPTIONS_KEY: [self.entity_description.off_option]}],
         )
+        self._assumed_on = False
+        self.async_write_ha_state()

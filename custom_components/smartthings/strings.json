@@ -255,9 +255,6 @@
       "washer_rinse_cycles": {
         "name": "Rinse cycles",
         "unit_of_measurement": "cycles"
-      },
-      "beep_volume": {
-        "name": "Beep volume"
       }
     },
     "select": {
@@ -1037,9 +1034,6 @@
       "display_lighting": {
         "name": "Display lighting"
       },
-      "do_not_disturb": {
-        "name": "Do not disturb"
-      },
       "dry_plus": {
         "name": "Dry plus"
       },
@@ -1108,14 +1102,6 @@
       },
       "auto_cleaning": {
         "name": "Auto cleaning"
-      }
-    },
-    "time": {
-      "do_not_disturb_end_time": {
-        "name": "Do not disturb end time"
-      },
-      "do_not_disturb_start_time": {
-        "name": "Do not disturb start time"
       }
     },
     "vacuum": {
