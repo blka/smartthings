@@ -679,9 +679,26 @@ def process_component_status(status: ComponentStatus) -> None:
             disabled_capabilities_capability[Attribute.DISABLED_CAPABILITIES].value,
         )
         if disabled_capabilities is not None:
+            _LOGGER.debug(
+                "Disabled capabilities reported by device: %s",
+                [c.value if hasattr(c, "value") else c for c in disabled_capabilities],
+            )
             for capability in disabled_capabilities:
                 if capability in status and (
                     capability not in KEEP_CAPABILITY_QUIRK
                     or not KEEP_CAPABILITY_QUIRK[capability](status[capability])
                 ):
+                    cap_id = capability.value if hasattr(capability, "value") else capability
+                    _LOGGER.debug(
+                        "Removing disabled capability (not in quirk): %s", cap_id
+                    )
                     del status[capability]
+                elif capability in status:
+                    cap_id = capability.value if hasattr(capability, "value") else capability
+                    _LOGGER.debug(
+                        "Preserving disabled capability (in quirk): %s", cap_id
+                    )
+            _LOGGER.debug(
+                "Remaining capabilities after processing: %s",
+                [c.value if hasattr(c, "value") else c for c in status],
+            )
