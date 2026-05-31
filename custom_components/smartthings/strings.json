@@ -255,6 +255,9 @@
       "washer_rinse_cycles": {
         "name": "Rinse cycles",
         "unit_of_measurement": "cycles"
+      },
+      "beep_volume": {
+        "name": "Beep volume"
       }
     },
     "select": {
