@@ -227,21 +227,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: SmartThingsConfigEntry) 
                 )
                 continue
             raw_status = await client.get_device_status(device.device_id)
-            if device.ocf and device.ocf.model_number and "ARTIK051" in device.ocf.model_number:
-                raw_caps = [
-                    c.value if hasattr(c, "value") else c
-                    for comp in raw_status.values()
-                    for c in comp.keys()
-                ]
-                _LOGGER.info("ARTIK051 device %s raw capabilities BEFORE processing: %s", device.device_id, raw_caps)
             status = process_status(raw_status)
-            if device.ocf and device.ocf.model_number and "ARTIK051" in device.ocf.model_number:
-                processed_caps = [
-                    c.value if hasattr(c, "value") else c
-                    for comp in status.values()
-                    for c in comp.keys()
-                ]
-                _LOGGER.info("ARTIK051 device %s capabilities AFTER processing: %s", device.device_id, processed_caps)
             online = await client.get_device_health(device.device_id)
             device_status[device.device_id] = FullDevice(
                 device=device, status=status, online=online.state == HealthStatus.ONLINE
@@ -634,22 +620,14 @@ KEEP_CAPABILITY_QUIRK: dict[
     Capability.WASHER_OPERATING_STATE: (
         lambda status: status[Attribute.SUPPORTED_MACHINE_STATES].value is not None
     ),
+    # WindFree AC (ARTIK051): Samsung lists these capabilities as "disabled"
+    # with None attribute values. Preserving them so entities get created.
     Capability.DEMAND_RESPONSE_LOAD_CONTROL: lambda _: True,
-    # WindFree AC: Samsung ARTIK051 lists these capabilities as "disabled" with
-    # None attribute values. The official quirk only preserves them when the
-    # attribute value is not None, which fails on ARTIK051. We always preserve
-    # them so switch, sensor, and select entities get created.
-    Capability.SAMSUNG_CE_AIR_CONDITIONER_LIGHTING: lambda _: True,
-    Capability.SAMSUNG_CE_AIR_CONDITIONER_BEEP: lambda _: True,
-    Capability.SAMSUNG_CE_AIR_CONDITIONER_AUDIO_FEEDBACK: lambda _: True,
     Capability.CUSTOM_AUTO_CLEANING_MODE: lambda _: True,
     Capability.CUSTOM_DUST_FILTER: lambda _: True,
-    Capability.AUDIO_VOLUME: lambda _: True,
-    Capability.AUDIO_MUTE: lambda _: True,
     Capability.POWER_CONSUMPTION_REPORT: lambda _: True,
     Capability.AIR_QUALITY_SENSOR: lambda _: True,
     Capability.DUST_SENSOR: lambda _: True,
-    Capability.FINE_DUST_SENSOR: lambda _: True,
     Capability.VERY_FINE_DUST_SENSOR: lambda _: True,
 }
 
@@ -684,9 +662,6 @@ def process_status(status: dict[str, ComponentStatus]) -> dict[str, ComponentSta
 
 def process_component_status(status: ComponentStatus) -> None:
     """Remove disabled capabilities from component status."""
-    # Log ALL capabilities before processing for ARTIK051 devices
-    all_caps_before = [c.value if hasattr(c, "value") else c for c in status]
-
     if (
         disabled_capabilities_capability := status.get(
             Capability.CUSTOM_DISABLED_CAPABILITIES
@@ -716,26 +691,3 @@ def process_component_status(status: ComponentStatus) -> None:
                     _LOGGER.debug(
                         "Preserving disabled capability (in quirk): %s", cap_id
                     )
-            _LOGGER.debug(
-                "Remaining capabilities after processing: %s",
-                [c.value if hasattr(c, "value") else c for c in status],
-            )
-    else:
-        _LOGGER.debug("No disabledCapabilities found in component")
-
-    # Log specific capabilities we care about
-    for cap_key in [
-        Capability.SAMSUNG_CE_AIR_CONDITIONER_BEEP,
-        Capability.SAMSUNG_CE_AIR_CONDITIONER_LIGHTING,
-        Capability.SAMSUNG_CE_AIR_CONDITIONER_AUDIO_FEEDBACK,
-        Capability.CUSTOM_AUTO_CLEANING_MODE,
-        Capability.CUSTOM_DUST_FILTER,
-        Capability.AUDIO_VOLUME,
-        Capability.AUDIO_MUTE,
-    ]:
-        if cap_key in status:
-            cap_data = status[cap_key]
-            attrs = {a.value if hasattr(a, "value") else a: str(v.value) for a, v in cap_data.items() if hasattr(v, "value")}
-            _LOGGER.info("Capability %s present: %s", cap_key.value, attrs)
-        else:
-            _LOGGER.info("Capability %s NOT present in status", cap_key.value)

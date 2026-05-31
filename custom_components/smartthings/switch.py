@@ -21,6 +21,14 @@ from .const import INVALID_SWITCH_CATEGORIES, MAIN
 from .entity import SmartThingsEntity
 from .util import deprecate_entity
 
+# OCF execute capability constants for Samsung AC devices
+OCF_MODE_HREF = "mode/vs/0"
+OCF_OPTIONS_KEY = "x.com.samsung.da.options"
+OCF_LIGHT_OFF = "Light_Off"  # Counterintuitive: sets display ON
+OCF_LIGHT_ON = "Light_On"  # Counterintuitive: sets display OFF
+OCF_VOLUME_100 = "Volume_100"  # Beep ON
+OCF_VOLUME_MUTE = "Volume_Mute"  # Beep OFF
+
 CAPABILITIES = (
     Capability.SWITCH_LEVEL,
     Capability.COLOR_CONTROL,
@@ -68,6 +76,32 @@ class SmartThingsDishwasherWashingOptionSwitchEntityDescription(
 
     on_key: str | bool = True
     off_key: str | bool = False
+
+
+@dataclass(frozen=True, kw_only=True)
+class SmartThingsExecuteSwitchEntityDescription(SwitchEntityDescription):
+    """Describe a SmartThings OCF execute switch entity."""
+
+    on_option: str
+    off_option: str
+
+
+EXECUTE_SWITCHES: dict[str, SmartThingsExecuteSwitchEntityDescription] = {
+    "display_lighting": SmartThingsExecuteSwitchEntityDescription(
+        key="display_lighting",
+        translation_key="display_lighting",
+        on_option=OCF_LIGHT_OFF,
+        off_option=OCF_LIGHT_ON,
+        entity_category=EntityCategory.CONFIG,
+    ),
+    "sound_effect": SmartThingsExecuteSwitchEntityDescription(
+        key="sound_effect",
+        translation_key="sound_effect",
+        on_option=OCF_VOLUME_100,
+        off_option=OCF_VOLUME_MUTE,
+        entity_category=EntityCategory.CONFIG,
+    ),
+}
 
 
 SWITCH = SmartThingsSwitchEntityDescription(
@@ -424,6 +458,25 @@ async def async_setup_entry(
                     Capability.SWITCH,
                 )
             )
+    # OCF execute switches for Samsung ACs that lack dedicated capabilities
+    for device in entry_data.devices.values():
+        if Capability.EXECUTE not in device.status[MAIN]:
+            continue
+        if Capability.AIR_CONDITIONER_MODE not in device.status[MAIN]:
+            continue
+        for key, description in EXECUTE_SWITCHES.items():
+            # Skip if dedicated capability already exists
+            if key == "display_lighting" and Capability.SAMSUNG_CE_AIR_CONDITIONER_LIGHTING in device.status[MAIN]:
+                continue
+            if key == "sound_effect" and Capability.SAMSUNG_CE_AIR_CONDITIONER_BEEP in device.status[MAIN]:
+                continue
+            entities.append(
+                SmartThingsExecuteSwitch(
+                    entry_data.client,
+                    device,
+                    description,
+                )
+            )
     async_add_entities(entities)
 
 
@@ -582,3 +635,79 @@ class SmartThingsDishwasherWashingOptionSwitch(SmartThingsCommandSwitch):
 
     def _current_state(self) -> Any:
         return super()._current_state()["value"]
+
+
+class SmartThingsExecuteSwitch(SmartThingsEntity, SwitchEntity):
+    """Define a SmartThings OCF execute switch for Samsung AC devices."""
+
+    entity_description: SmartThingsExecuteSwitchEntityDescription
+
+    def __init__(
+        self,
+        client: SmartThings,
+        device: FullDevice,
+        entity_description: SmartThingsExecuteSwitchEntityDescription,
+    ) -> None:
+        """Initialize the execute switch."""
+        super().__init__(client, device, {Capability.EXECUTE}, component=MAIN)
+        self.entity_description = entity_description
+        self._attr_unique_id = (
+            f"{device.device.device_id}_{MAIN}_execute_{entity_description.key}"
+        )
+
+    def _get_ocf_options(self) -> list[str] | None:
+        """Extract OCF options list from execute capability data attribute."""
+        try:
+            data_status = self._internal_state.get(Capability.EXECUTE, {}).get(
+                Attribute.DATA
+            )
+            if data_status is None:
+                return None
+            value = data_status.value
+            # Try structured payload: {"payload": {"x.com.samsung.da.options": [...]}}
+            if isinstance(value, dict):
+                payload = value.get("payload", value)
+                options = payload.get(OCF_OPTIONS_KEY)
+                if isinstance(options, list):
+                    return options
+            # Try list of payloads
+            if isinstance(value, list):
+                for item in value:
+                    if isinstance(item, dict):
+                        payload = item.get("payload", item)
+                        options = payload.get(OCF_OPTIONS_KEY)
+                        if isinstance(options, list):
+                            return options
+            # Check data field on Status object
+            if data_status.data is not None and isinstance(data_status.data, dict):
+                payload = data_status.data.get("payload", data_status.data)
+                options = payload.get(OCF_OPTIONS_KEY)
+                if isinstance(options, list):
+                    return options
+        except (KeyError, TypeError, AttributeError):
+            pass
+        return None
+
+    @property
+    def is_on(self) -> bool:
+        """Return true if switch is on."""
+        options = self._get_ocf_options()
+        if options is None:
+            return True
+        return self.entity_description.off_option not in options
+
+    async def async_turn_on(self, **kwargs: Any) -> None:
+        """Turn the switch on."""
+        await self.execute_device_command(
+            Capability.EXECUTE,
+            Command.EXECUTE,
+            [OCF_MODE_HREF, {OCF_OPTIONS_KEY: [self.entity_description.on_option]}],
+        )
+
+    async def async_turn_off(self, **kwargs: Any) -> None:
+        """Turn the switch off."""
+        await self.execute_device_command(
+            Capability.EXECUTE,
+            Command.EXECUTE,
+            [OCF_MODE_HREF, {OCF_OPTIONS_KEY: [self.entity_description.off_option]}],
+        )
