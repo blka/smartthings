@@ -645,6 +645,7 @@ class SmartThingsExecuteSwitch(SmartThingsEntity, SwitchEntity):
     """Define a SmartThings OCF execute switch for Samsung AC devices."""
 
     entity_description: SmartThingsExecuteSwitchEntityDescription
+    _attr_assumed_on: bool = True
 
     def __init__(
         self,
@@ -658,7 +659,14 @@ class SmartThingsExecuteSwitch(SmartThingsEntity, SwitchEntity):
         self._attr_unique_id = (
             f"{device.device.device_id}_{MAIN}_execute_{entity_description.key}"
         )
-        self._assumed_on = True
+
+    async def async_added_to_hass(self) -> None:
+        """Restore last known state after HA restart."""
+        await super().async_added_to_hass()
+        last_state = await self.async_get_last_state()
+        if last_state is not None:
+            self._attr_assumed_on = last_state.state == "on"
+            self.async_write_ha_state()
 
     def _get_ocf_options(self) -> list[str] | None:
         """Extract OCF options list from execute capability data attribute."""
@@ -699,7 +707,7 @@ class SmartThingsExecuteSwitch(SmartThingsEntity, SwitchEntity):
         options = self._get_ocf_options()
         if options is not None:
             return self.entity_description.off_option not in options
-        return self._assumed_on
+        return self._attr_assumed_on
 
     async def async_turn_on(self, **kwargs: Any) -> None:
         """Turn the switch on."""
@@ -708,7 +716,7 @@ class SmartThingsExecuteSwitch(SmartThingsEntity, SwitchEntity):
             Command.EXECUTE,
             [OCF_MODE_HREF, {OCF_OPTIONS_KEY: [self.entity_description.on_option]}],
         )
-        self._assumed_on = True
+        self._attr_assumed_on = True
         self.async_write_ha_state()
 
     async def async_turn_off(self, **kwargs: Any) -> None:
@@ -718,5 +726,5 @@ class SmartThingsExecuteSwitch(SmartThingsEntity, SwitchEntity):
             Command.EXECUTE,
             [OCF_MODE_HREF, {OCF_OPTIONS_KEY: [self.entity_description.off_option]}],
         )
-        self._assumed_on = False
+        self._attr_assumed_on = False
         self.async_write_ha_state()
