@@ -1325,12 +1325,18 @@ CAPABILITY_TO_SENSORS: dict[
                 key=Attribute.VERSIONS,
                 translation_key="software_version",
                 entity_category=EntityCategory.DIAGNOSTIC,
-                value_fn=lambda value: next(
-                    (v["versionNumber"] for v in value if v.get("swType") == "Firmware"),
-                    None,
-                )
-                if isinstance(value, list)
-                else None,
+                value_fn=lambda value: (
+                    next(
+                        (
+                            v["versionNumber"]
+                            for v in value
+                            if v.get("swType") == "Firmware"
+                        ),
+                        None,
+                    )
+                    if isinstance(value, list)
+                    else None
+                ),
             )
         ],
     },
@@ -1524,17 +1530,23 @@ class SmartThingsSensor(SmartThingsEntity, SensorEntity):
             )
         if self.capability == Capability.CUSTOM_DUST_FILTER:
             attrs: dict[str, Any] = {}
-            if (capacity := self.get_attribute_value(
-                self.capability, Attribute.DUST_FILTER_CAPACITY
-            )) is not None:
+            if (
+                capacity := self.get_attribute_value(
+                    self.capability, Attribute.DUST_FILTER_CAPACITY
+                )
+            ) is not None:
                 attrs["capacity"] = capacity
-            if (status := self.get_attribute_value(
-                self.capability, Attribute.DUST_FILTER_STATUS
-            )) is not None:
+            if (
+                status := self.get_attribute_value(
+                    self.capability, Attribute.DUST_FILTER_STATUS
+                )
+            ) is not None:
                 attrs["status"] = status
-            if (reset_type := self.get_attribute_value(
-                self.capability, Attribute.DUST_FILTER_RESET_TYPE
-            )) is not None:
+            if (
+                reset_type := self.get_attribute_value(
+                    self.capability, Attribute.DUST_FILTER_RESET_TYPE
+                )
+            ) is not None:
                 attrs["reset_type"] = reset_type
             return attrs
         if self.capability == Capability.SAMSUNG_CE_SOFTWARE_VERSION:

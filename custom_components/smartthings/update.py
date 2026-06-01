@@ -40,6 +40,7 @@ def is_hex_version(version: str) -> bool:
 class SmartThingsUpdateEntity(SmartThingsEntity, UpdateEntity):
     """Define a SmartThings update entity."""
 
+    _attr_name = None
     _attr_device_class = UpdateDeviceClass.FIRMWARE
     _attr_supported_features = (
         UpdateEntityFeature.INSTALL | UpdateEntityFeature.PROGRESS

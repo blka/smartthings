@@ -12,7 +12,7 @@ from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from . import FullDevice, SmartThingsConfigEntry
-from .const import MAIN
+from .const import DOMAIN, MAIN
 from .entity import SmartThingsEntity
 
 LAMP_TO_HA = {
@@ -420,7 +420,8 @@ class SmartThingsSelectEntity(SmartThingsEntity, SelectEntity):
             == "false"
         ):
             raise ServiceValidationError(
-                "Can only be updated when remote control is enabled"
+                translation_domain=DOMAIN,
+                translation_key="remote_control_status",
             )
 
     async def async_select_option(self, option: str) -> None:
@@ -512,7 +513,8 @@ class SmartThingsDishwasherWashingOptionSelectEntity(SmartThingsSelectEntity):
             != "stop"
         ):
             raise ServiceValidationError(
-                "Can only be updated when dishwasher machine state is stop"
+                translation_domain=DOMAIN,
+                translation_key="dishwasher_machine_state",
             )
 
     async def async_select_option(self, option: str) -> None:

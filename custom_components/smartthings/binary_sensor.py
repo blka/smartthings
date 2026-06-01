@@ -128,6 +128,7 @@ CAPABILITY_TO_SENSORS: dict[
             key=Attribute.REMOTE_CONTROL_ENABLED,
             translation_key="remote_control",
             is_on_key="true",
+            entity_category=EntityCategory.DIAGNOSTIC,
             component_translation_key={
                 "sub": "sub_remote_control",
             },
@@ -145,6 +146,7 @@ CAPABILITY_TO_SENSORS: dict[
             key=Attribute.SWITCH,
             device_class=BinarySensorDeviceClass.POWER,
             is_on_key="on",
+            entity_category=EntityCategory.DIAGNOSTIC,
             category=INVALID_SWITCH_CATEGORIES,
         )
     },
@@ -203,6 +205,7 @@ CAPABILITY_TO_SENSORS: dict[
             key=Attribute.COOKTOP_OPERATING_STATE,
             translation_key="cooktop_operating_state",
             is_on_key="run",
+            entity_category=EntityCategory.DIAGNOSTIC,
             supported_states_attributes=Attribute.SUPPORTED_COOKTOP_OPERATING_STATE,
         )
     },

@@ -1119,6 +1119,16 @@
           }
         }
       }
+    },
+    "water_heater": {
+      "water_heater": {
+        "name": "Water heater"
+      }
+    },
+    "update": {
+      "smartthings_update": {
+        "name": "Firmware update"
+      }
     }
   },
   "exceptions": {
@@ -1127,6 +1137,12 @@
     },
     "remote_control_status": {
       "message": "Can only be changed when remote control is enabled"
+    },
+    "dishwasher_machine_state": {
+      "message": "Can only be changed when dishwasher machine state is stop"
+    },
+    "dishwasher_option_not_supported": {
+      "message": "Option is not supported by selected cycle"
     }
   },
   "issues": {

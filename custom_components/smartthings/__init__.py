@@ -680,13 +680,17 @@ def process_component_status(status: ComponentStatus) -> None:
                     capability not in KEEP_CAPABILITY_QUIRK
                     or not KEEP_CAPABILITY_QUIRK[capability](status[capability])
                 ):
-                    cap_id = capability.value if hasattr(capability, "value") else capability
+                    cap_id = (
+                        capability.value if hasattr(capability, "value") else capability
+                    )
                     _LOGGER.debug(
                         "Removing disabled capability (not in quirk): %s", cap_id
                     )
                     del status[capability]
                 elif capability in status:
-                    cap_id = capability.value if hasattr(capability, "value") else capability
+                    cap_id = (
+                        capability.value if hasattr(capability, "value") else capability
+                    )
                     _LOGGER.debug(
                         "Preserving disabled capability (in quirk): %s", cap_id
                     )
