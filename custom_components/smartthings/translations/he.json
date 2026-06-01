@@ -245,8 +245,7 @@
         "name": "Target temperature"
       },
       "washer_rinse_cycles": {
-        "name": "Rinse cycles",
-        "unit_of_measurement": "cycles"
+        "name": "Rinse cycles"
       },
       "tropical_night_mode": {
         "name": "Tropical night mode"
@@ -264,8 +263,7 @@
         }
       },
       "dust_filter_alarm": {
-        "name": "Dust filter alarm threshold",
-        "unit_of_measurement": "hours"
+        "name": "Dust filter alarm threshold"
       },
       "flexible_detergent_amount": {
         "name": "Flexible compartment dispense amount",
@@ -543,8 +541,7 @@
         "name": "Dryer mode"
       },
       "dust_filter_usage": {
-        "name": "Dust filter usage",
-        "unit_of_measurement": "hours"
+        "name": "Dust filter usage"
       },
       "energy_difference": {
         "name": "Energy difference"
@@ -897,8 +894,7 @@
         "name": "Software version"
       },
       "stick_cleaner_dust_bag_usage": {
-        "name": "Dust bag cycles",
-        "unit_of_measurement": "cycles"
+        "name": "Dust bag cycles"
       },
       "stick_cleaner_dustbin_last_emptied": {
         "name": "Last emptied"
